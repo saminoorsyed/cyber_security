@@ -1,0 +1,1 @@
+And we have another plaintext file, but this time we're using hashes to encrypt... right?
