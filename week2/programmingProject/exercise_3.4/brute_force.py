@@ -8,7 +8,7 @@ def main():
     parser.add_argument("ciphertext", help="provide the cipher hex string as a hexadecimal string", type=str)
 
     args = parser.parse_args()
-    plaintext = args.plaintext.encode('utf-8')  # Convert hex string to bytes
+    plaintext = args.plaintext.encode('utf-8')  
     ciphertext = bytes.fromhex(args.ciphertext)  # Convert hex string to bytes
 
     if not plaintext or not ciphertext:
