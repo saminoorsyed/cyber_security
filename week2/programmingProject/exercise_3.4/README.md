@@ -1,4 +1,5 @@
 ## Exercise 3.4 directions
+# Directions:
 
 1) unzip the repository into it's own directory
 2) that directory should have three files:
