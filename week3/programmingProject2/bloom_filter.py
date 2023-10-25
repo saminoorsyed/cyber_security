@@ -8,6 +8,7 @@ import hashlib
 from array import array
 import sys
 import argparse
+import cryptography
 # Create a bit array
 # bit_array = array('b', [0, 1, 0, 1, 1, 0, 0, 1])
 
@@ -20,7 +21,7 @@ class BloomFilter:
         self.bit_array = array('b', [0]*bits)
         # avalable hashes from hashlib library
         hashes = ["MD5", "SHA-1", "SHA-224", "SHA-256",
-                  "SHA-384", "SHA-512", "BLAKE2"]
+                  "SHA-384", "SHA-512", "SHA-3", "BLAKE2"]
         # number of hashes, k
         self.hash_count = hash_count
         # create a list of hash objects for later use
