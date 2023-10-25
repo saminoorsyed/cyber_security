@@ -6,7 +6,8 @@ The software will calculate and display statistics on true positive, true negati
 # imports
 import hashlib
 from array import array
-
+import sys
+import argparse
 # Create a bit array
 # bit_array = array('b', [0, 1, 0, 1, 1, 0, 0, 1])
 
@@ -80,13 +81,13 @@ class BloomFilter:
         return self.words_caught
 
 
-def test_bloom_filter(bloom_instance: BloomFilter):
+def test_bloom_filter(bloom_instance: BloomFilter, input_file_path, check_file_path):
     """function to automate testing of bloom filer, reads in words from rockyou.txt and tests the words in dictionary.txt out puts a results.txt file and prints results to console"""
     # create a set of words from rockyou
     # add words to the bloom filter
     filter_set = set()
     try:
-        with open("rockyou.ISO-8859-1.txt", 'r', encoding='ISO-8859-1') as fp:
+        with open(input_file_path, 'r', encoding='ISO-8859-1') as fp:
             while True:
                 line = fp.readline()
                 if not line:
@@ -107,7 +108,7 @@ def test_bloom_filter(bloom_instance: BloomFilter):
     }
 
     try:
-        with open("dictionary.txt", 'r', encoding='ISO-8859-1') as fp:
+        with open(check_file_path, 'r', encoding='ISO-8859-1') as fp:
             while True:
                 line = fp.readline()
                 if not line:
@@ -143,18 +144,36 @@ def test_bloom_filter(bloom_instance: BloomFilter):
         results_file.writelines(results)
     return results_dict
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Bloom filter implementation and testing')
+    parser.add_argument('input_file', help='Input file with values to populate the Bloom filter')
+    parser.add_argument('dictionary_file', help='File containing values to be tested')
+    parser.add_argument('--bits', type=int, default=134190817, help='Number of bits in the Bloom filter')
+    parser.add_argument('--hashes', type=int, default=3, help='Number of hash functions to use')
+    return parser.parse_args()
 
 if __name__ == "__main__":
-    # adjust the number of bits in the bit filter by changing the first arg, adjust the hashes by adjusting the second arg
-    # you can choose between 1 and 8
-    bloom_filter = BloomFilter(134190817, 3)
-    results = test_bloom_filter(bloom_filter)
+    args = parse_arguments()
+    input_file = args.input_file
+    dictionary_file = args.dictionary_file
 
-    true_neg = round (results['true_neg']/bloom_filter.words_tested *100)
-    false_neg = round (results['false_neg']/bloom_filter.words_tested *100)
-    false_pos = round (results['false_pos']/bloom_filter.words_tested *100)
-    true_pos = round (results['true_pos']/bloom_filter.words_tested *100)
+    # Adjust the number of bits in the Bloom filter and the number of hashes based on command-line arguments
+    bloom_filter = BloomFilter(args.bits, args.hashes)
 
-    print(f"the following results rounded percentages based on these definitions:\ntrue_neg = the word does not exists in rockyou.txt and was not Identified by the bloom filter\nfalse_neg = the word exists in rockyou.txt, but was not Identified by the bloom filter\nfalse_pos = the word is not in rockyou.txt but was Identified by the bloom filter\ntrue positive: the word is in the rockyou.txt and was identified by the bloom filter")
-    print(
-        f"the following are percentages based on the total number of words tested:\n true negative: {true_neg}%\n false negative: {false_neg}%\n false positive: {false_pos}%\n true positive: {true_pos}%")
+    results = test_bloom_filter(bloom_filter, input_file, dictionary_file)
+
+    true_neg = round(results['true_neg'] / bloom_filter.words_tested * 100)
+    false_neg = round(results['false_neg'] / bloom_filter.words_tested * 100)
+    false_pos = round(results['false_pos'] / bloom_filter.words_tested * 100)
+    true_pos = round(results['true_pos'] / bloom_filter.words_tested * 100)
+
+    print("The following results rounded percentages based on these definitions:")
+    print("true_neg = the word does not exist in rockyou.txt and was not identified by the bloom filter")
+    print("false_neg = the word exists in rockyou.txt, but was not identified by the bloom filter")
+    print("false_pos = the word is not in rockyou.txt but was identified by the bloom filter")
+    print("true positive: the word is in the rockyou.txt and was identified by the bloom filter")
+    print("The following are percentages based on the total number of words tested:")
+    print(f"True negative: {true_neg}%")
+    print(f"False negative: {false_neg}%")
+    print(f"False positive: {false_pos}%")
+    print(f"True positive: {true_pos}%")
