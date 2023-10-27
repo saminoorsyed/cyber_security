@@ -3,6 +3,8 @@
 ## Introduction
 The provided Python script, `bloom_filter.py`, implements a Bloom filter, a space-efficient probabilistic data structure used for membership testing. The Bloom filter is loaded with values from the `rockyou.txt` file, and the script automates the testing of values from the `dictionary.txt` file. The script calculates and displays statistics, including true positive, true negative, false positive, and false negative values, based on the above files.
 
+If you want to test other files, simply replace the train_file and replace the test_file with in the command below with file paths to the files you want to test and train. 
+
 ## Usage
 
 ### Prerequisites
@@ -13,13 +15,13 @@ The provided Python script, `bloom_filter.py`, implements a Bloom filter, a spac
 You can run the Bloom filter script with the following command:
 
 ```bash
-python bloom_filter.py input_file dictionary_file [--bits BITS] [--hashes HASHES]
+python bloom_filter.py train_file test_file [--bits BITS] [--hashes HASHES]
 ```
 
-here is an example command:
+here is an example command, and the command I used to run the program with my specifications:
 
 ```bash
-python3 bloom_filter.py rockyou.ISO-8859-1.txt dictionary.txt --bits 140000000 --hashes 3
+python3 bloom_filter.py rockyou.ISO-8859-1.txt dictionary.txt --bits 150000000 --hashes 5
 ```
 
 - `input_file`: Path to the file containing values to populate the Bloom filter (e.g., `rockyou.txt`).
@@ -29,14 +31,15 @@ python3 bloom_filter.py rockyou.ISO-8859-1.txt dictionary.txt --bits 140000000 -
 
 ### Output
 The script will generate a `results.txt` file that contains the test results. This file lists each word from the `dictionary.txt` file and its corresponding test result (True Positive, True Negative, False Positive, or False Negative).
+The script also summarizes the data into a console output of the percentage of each result type after it finishes running.
 
 ### Interpretation of Results
 The script calculates and displays statistics in rounded percentages, based on the following definitions:
 
-- `true_neg`: The percentage of words from dictionary.txt does not exist in `rockyou.txt` and were not identified by the Bloom filter.
-- `false_neg`: The percentage of words from dictionary.txt exists in `rockyou.txt`, and were not identified by the Bloom filter.
-- `false_pos`: The percentage of words from dictionary.txt is not in `rockyou.txt`, and were identified by the Bloom filter.
-- `true_pos`: The percentage of words from dictionary.txt is in `rockyou.txt` and were identified by the Bloom filter.
+- `True negative`: The percentage of words from dictionary.txt does not exist in `rockyou.txt` and were not identified by the Bloom filter.
+- `False negative`: The percentage of words from dictionary.txt exists in `rockyou.txt`, and were not identified by the Bloom filter.
+- `False positive`: The percentage of words from dictionary.txt is not in `rockyou.txt`, and were identified by the Bloom filter.
+- `True positive`: The percentage of words from dictionary.txt is in `rockyou.txt` and were identified by the Bloom filter.
 
 The percentages are based on the total number of words tested and are displayed as rounded values. The script will also print these statistics to the console.
 

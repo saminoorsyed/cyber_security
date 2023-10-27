@@ -1,21 +1,20 @@
-'''The software will implement a Bloom filter.
+'''The script will implement a Bloom filter.
 Bloom filter will be loaded with values from rockyou.txt.
-The software will automate the testing of values in dictionary.txt.
-The software will calculate and display statistics on true positive, true negative, false positive, and false negative for the dictionary.txt based on the rockyou.txt.'''
+The software will automate the testing of values in test.txt.
+The software will calculate and display statistics on true positive, true negative, false positive, and false negative for the test.txt based on the rockyou.txt.'''
 
 # imports
 import hashlib
 from array import array
 import sys
 import argparse
-import cryptography
 # Create a bit array
 # bit_array = array('b', [0, 1, 0, 1, 1, 0, 0, 1])
 
 
 class BloomFilter:
     def __init__(self, bits: int, hash_count: int):
-        # use this for modulo arithmitic when adding to the bloom filter or checking
+        # use this for modulo arithmetic when adding to the bloom filter or checking
         self.size = bits
         # this is the actual bloom filter
         self.bit_array = array('b', [0]*bits)
@@ -83,7 +82,7 @@ class BloomFilter:
 
 
 def test_bloom_filter(bloom_instance: BloomFilter, input_file_path, check_file_path):
-    """function to automate testing of bloom filer, reads in words from rockyou.txt and tests the words in dictionary.txt out puts a results.txt file and prints results to console"""
+    """function to automate testing of bloom filer, reads in words from rockyou.txt and tests the words in test.txt out puts a results.txt file and prints results to console"""
     # create a set of words from rockyou
     # add words to the bloom filter
     filter_set = set()
@@ -98,7 +97,7 @@ def test_bloom_filter(bloom_instance: BloomFilter, input_file_path, check_file_p
     except FileNotFoundError:
         print("input File not found.")
     except UnicodeDecodeError:
-        print("Error decoding the input file")
+        print("Error decoding the input file, this program only takes files of ISO-8859-1 type")
 
     results = []
     results_dict = {
@@ -139,40 +138,48 @@ def test_bloom_filter(bloom_instance: BloomFilter, input_file_path, check_file_p
                 results.append(f"{line.strip()}: {result_str}\n")
     except FileNotFoundError:
         print("check File not found.")
-    except UnicodeDecodeError as e:
-        print(f"Error decoding the dictionary file: {e}")
+    except UnicodeDecodeError:
+        print(f"Error decoding the test file, this program only takes files of ISO-8859-1 type")
     with open("./results.txt", 'w') as results_file:
         results_file.writelines(results)
     return results_dict
 
+# parse terminal arguments so that they can be fed into rest of the script
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Bloom filter implementation and testing')
-    parser.add_argument('input_file', help='Input file with values to populate the Bloom filter')
-    parser.add_argument('dictionary_file', help='File containing values to be tested')
-    parser.add_argument('--bits', type=int, default=134190817, help='Number of bits in the Bloom filter')
-    parser.add_argument('--hashes', type=int, default=3, help='Number of hash functions to use')
+    parser = argparse.ArgumentParser(
+        description='Bloom filter implementation and testing')
+    parser.add_argument(
+        'input_file', help='Input file with values to populate the Bloom filter')
+    parser.add_argument('test_file',
+                        help='File containing values to be tested')
+    parser.add_argument('--bits', type=int, default=134190817,
+                        help='Number of bits in the Bloom filter')
+    parser.add_argument('--hashes', type=int, default=3,
+                        help='Number of hash functions to use')
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     args = parse_arguments()
     input_file = args.input_file
-    dictionary_file = args.dictionary_file
+    test_file = args.test_file
 
-    # Adjust the number of bits in the Bloom filter and the number of hashes based on command-line arguments
+    # initiate the bloom filter
     bloom_filter = BloomFilter(args.bits, args.hashes)
 
-    results = test_bloom_filter(bloom_filter, input_file, dictionary_file)
+    # pre-load bloom filter and test it
+    results = test_bloom_filter(bloom_filter, input_file, test_file)
 
     true_neg = round(results['true_neg'] / bloom_filter.words_tested * 100)
     false_neg = round(results['false_neg'] / bloom_filter.words_tested * 100)
     false_pos = round(results['false_pos'] / bloom_filter.words_tested * 100)
     true_pos = round(results['true_pos'] / bloom_filter.words_tested * 100)
 
-    print("The following results rounded percentages based on these definitions:")
-    print("true_neg = the word does not exist in rockyou.txt and was not identified by the bloom filter")
-    print("false_neg = the word exists in rockyou.txt, but was not identified by the bloom filter")
-    print("false_pos = the word is not in rockyou.txt but was identified by the bloom filter")
-    print("true positive: the word is in the rockyou.txt and was identified by the bloom filter")
+    print("The following results are rounded percentages based on these definitions:")
+    print("True negative = the word does not exist in rockyou.txt and was not identified by the bloom filter")
+    print("False negative = the word exists in rockyou.txt, but was not identified by the bloom filter")
+    print("False positive = the word is not in rockyou.txt but was identified by the bloom filter")
+    print("True positive = the word is in the rockyou.txt and was identified by the bloom filter")
     print("The following are percentages based on the total number of words tested:")
     print(f"True negative: {true_neg}%")
     print(f"False negative: {false_neg}%")
